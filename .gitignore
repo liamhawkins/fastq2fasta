@@ -1,1 +1,7 @@
 *.swp
+*.fastq
+*.fq
+*.fasta
+*.fa
+*.json
+node_modules/
