@@ -13,9 +13,32 @@ if (window.File && window.FileReader && window.FileList && window.Blob) {
         return fastq_reads
     };
 
+	function readsToString(reads) {
+		return reads.map(e => e.join('\n')).join('\n\n');
+	};
+
+    function download(file_name, reads) {
+        var file_name_extension = file_name + ".fa";
+        var content = readsToString(reads);
+		console.log(content);
+
+        var pom = document.createElement('a');
+		pom.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(content));
+		pom.setAttribute('download', file_name_extension);
+
+		if (document.createEvent) {
+			var event = document.createEvent('MouseEvents');
+			event.initEvent('click', true, true);
+			pom.dispatchEvent(event);
+		}
+		else {
+			pom.click();
+		}
+    };
+
     function parse_file(file) {
     // TODO: Validate FASTQ format
-    // TODO: Write to file
+    // TODO: Write to zip
 
 
         // Check if fastq/fq extension
@@ -51,6 +74,8 @@ if (window.File && window.FileReader && window.FileList && window.Blob) {
             var fasta_reads = convert(fastq_reads);
             console.log("FASTA reads:");
             console.log(fasta_reads);
+
+            download(file.name.split('.')[0], fasta_reads);
         };
 
         reader.readAsText(file)
