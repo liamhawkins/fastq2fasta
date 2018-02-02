@@ -1,8 +1,9 @@
 if (window.File && window.FileReader && window.FileList && window.Blob) {
+
 	var zip = new JSZip();
 	var numRemaining = 0;
 
-    document.getElementById('submit-button').addEventListener("click", uploadFiles);
+    document.getElementById('submit-button').addEventListener("click", convertButton);
 
     function isValidRead(read) {
         return read[0][0] == "@" && read[2][0] == "+" && read[1].length === read[3].length
@@ -34,51 +35,82 @@ if (window.File && window.FileReader && window.FileList && window.Blob) {
 
 		// When file has been loaded process it
         reader.onload = function(progressEvent){
-			// Split file into array of lines
-            var file_array = this.result.split('\n');
-			var fastq_reads = [];
-			var fasta_reads = [];
-			var i = 0;
+			var files = document.getElementById("files").files;
 
-            // remove blank lines
-            file_array = file_array.filter(function(elem){
-                return elem !== "";
-            });
-			// Create array containing verified FASTQ reads (4 lines)
-            for (i=0; i<file_array.length; i+=4) {
-                if (isValidRead(file_array.slice(i,i+4))){
-                    fastq_reads.push(file_array.slice(i,i+4))
-                }else{
-                    // TODO: DEAL WITH INVALID READS
-                    console.log("INVALID READ")
-                }
-            };
-			// Convert verified FASTQ reads to FASTA reads
-            fasta_reads = convert(fastq_reads);
-			// Add FASTA files to zip file
-            zip.file(file.name.split('.')[0] + '.fa', readsToString(fasta_reads));
-            numRemaining--;
-			// When all FASTA files have been created and zipped, download zip
-            if (numRemaining == 0) {
-                zip.generateAsync({type:"blob"})
-				.then(function (blob) {
-					saveAs(blob, "fasta_files.zip");
-				});
-            }
+			fastaReads = processFileOrText(this.result);
+			if (files.length === 1) {
+				var blob = new Blob([readsToString(fastaReads)], {type: "text/plain;charset=utf-8"});
+				saveAs(blob, files[0].name.split('.')[0] + ".fa");
+				clearInputs();
+			} else {
+				// Add FASTA files to zip file
+				zip.file(file.name.split('.')[0] + '.fa', readsToString(fastaReads));
+				numRemaining--;
+				// When all FASTA files have been created and zipped, download zip
+				if (numRemaining == 0) {
+					zip.generateAsync({type:"blob"})
+					.then(function (blob) {
+						saveAs(blob, "fasta_files.zip");
+						clearInputs();
+					});
+				}
+			}
         };
 
         reader.readAsText(file)
     };
 
-    function uploadFiles() {
+    function processFileOrText(rawReads) {
+        var rawReadArray = rawReads.split('\n');
+        var fastqReads = [];
+        var i = 0;
+
+        rawReadArray = rawReadArray.filter(function(elem){
+            return elem !== "";
+        });
+
+        for (i = 0; i < rawReadArray.length; i+=4) {
+            if (isValidRead(rawReadArray.slice(i,i+4))) {
+                fastqReads.push(rawReadArray.slice(i,i+4))
+            } else {
+                // TODO: DEAL WITH INVALID READS
+                console.log("INVALID READ");
+            }
+        };
+        // Convert verified FASTQ reads to FASTA reads
+        fastaReads = convert(fastqReads);
+        return fastaReads;
+
+    };
+
+    function parseText(text) {
+        fastaReads = processFileOrText(text);
+        var blob = new Blob([readsToString(fastaReads)], {type: "text/plain;charset=utf-8"});
+		saveAs(blob, "fastq2fasta.fa");
+		clearInputs();
+    };
+	function clearInputs() {
+		$("#files").filestyle('clear');
+		document.getElementById("fastqText").value = "";
+	};
+
+    function convertButton() {
         var files = document.getElementById("files").files; // FileList object
+        var text = document.getElementById("fastqText").value;
 		var i=0;
 		var file;
 
-        numRemaining = files.length;
-        for (i=0; file=files[i]; i++){
-            parseFile(file);
-        };
+        if (files.length === 0 && text.length === 0) {
+            alert("Please enter text or files");
+        } else if (files.length > 0) {
+            numRemaining = files.length;
+            for (i=0; file=files[i]; i++){
+                parseFile(file);
+            };
+		} else {
+            parseText(text);
+        }
+
     };
 
 
