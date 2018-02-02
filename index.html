@@ -19,12 +19,11 @@
             <textarea class="form-control w-50" id="fastqText" rows="5" placeholder="Paste FASTQ format here"></textarea>
         </div>
         <div class="form-group w-50">
-			<input type="file" id="files" name="files[]" multiple />
+			<input type="file" id="files" name="files[]" accept=".fq, .fastq" multiple />
         </div>
         <button type="button" id="submit-button" class="btn btn-info btn-lg btn-block w-50">Convert</button>
     </form>
 </div>
-<h1 id="error"></h1>
 <script>
 	$('#files').filestyle({
 		btnClass : 'btn-secondary',

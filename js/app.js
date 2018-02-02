@@ -28,23 +28,22 @@ if (window.File && window.FileReader && window.FileList && window.Blob) {
         var file_ex = file.name.split('.')[1];
         var reader = new FileReader();
 
-        if(file_ex != 'fastq' && file_ex != 'fq'){
-           document.getElementById('error').innerHTML = file.name + " is not a fastq file" ;
-           return true;
-        };
-
 		// When file has been loaded process it
         reader.onload = function(progressEvent){
 			var files = document.getElementById("files").files;
 
 			fastaReads = processFileOrText(this.result);
-			if (files.length === 1) {
+			if (files.length === 1 && fastaReads.length > 0) {
 				var blob = new Blob([readsToString(fastaReads)], {type: "text/plain;charset=utf-8"});
 				saveAs(blob, files[0].name.split('.')[0] + ".fa");
 				clearInputs();
 			} else {
-				// Add FASTA files to zip file
-				zip.file(file.name.split('.')[0] + '.fa', readsToString(fastaReads));
+				if (fastaReads.length > 0) {
+					// Add FASTA files to zip file
+					zip.file(file.name.split('.')[0] + '.fa', readsToString(fastaReads));
+				} else {
+					alert(file.name + ": NO VALID READS");
+				}
 				numRemaining--;
 				// When all FASTA files have been created and zipped, download zip
 				if (numRemaining == 0) {
@@ -55,8 +54,7 @@ if (window.File && window.FileReader && window.FileList && window.Blob) {
 					});
 				}
 			}
-        };
-
+		}
         reader.readAsText(file)
     };
 
@@ -85,9 +83,14 @@ if (window.File && window.FileReader && window.FileList && window.Blob) {
 
     function parseText(text) {
         fastaReads = processFileOrText(text);
-        var blob = new Blob([readsToString(fastaReads)], {type: "text/plain;charset=utf-8"});
-		saveAs(blob, "fastq2fasta.fa");
-		clearInputs();
+		if (fastaReads.length > 0) {
+			var blob = new Blob([readsToString(fastaReads)], {type: "text/plain;charset=utf-8"});
+			saveAs(blob, "fastq2fasta.fa");
+			clearInputs();
+		} else {
+			alert("NO VALID READS");
+			clearInputs();
+		}
     };
 	function clearInputs() {
 		$("#files").filestyle('clear');
