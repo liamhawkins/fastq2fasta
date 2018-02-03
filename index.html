@@ -12,23 +12,58 @@
     <script src="js/jszip.min.js" type="text/javascript"></script>
     <script src="node_modules/file-saver/FileSaver.js" type="text/javascript"></script>
 </head>
+
 <title>FASTQ to FASTA Converter</title>
+
 <body>
+
 <div class="container">
-    <h1>FASTQ to FASTA Conversion</h1>
-    <p class="w-50">Easily convert one or more FASTQ files to FASTA format. No downloading
-    and configuring command line tools, no file limits, easy and quick from
-    your browser.</p>
-    <form>
-        <div class="form-group">
-            <textarea class="form-control w-50" id="fastqText" rows="5" placeholder="Paste FASTQ format here"></textarea>
+    <div class="row">
+        <div class="col-lg-3"></div>
+        <div class="col-lg-6">
+            <h1>FASTQ to FASTA Conversion</h1>
+            <p>Easily convert one or more FASTQ files to FASTA format. No downloading
+            and configuring command line tools, no file limits, easy and quick from
+            your browser.</p>
+
+            <form>
+                <!-- Text area -->
+                <div class="form-group">
+                    <textarea class="form-control" id="fastqText" rows="5" placeholder="Paste FASTQ format here"></textarea>
+                </div>
+
+                <!-- File upload -->
+                <div class="form-group">
+                    <input type="file" id="files" name="files[]" accept=".fq, .fastq" multiple />
+                </div>
+
+                <!-- Convert button -->
+                <button type="button" id="submit-button" class="btn btn-info btn-lg btn-block">Convert</button>
+            </form>
+
+             <div class="share-links">
+                <h3>Like it? Share it!</h3>
+                <!--Share Links-->
+                <div class="a2a_kit a2a_kit_size_32 a2a_default_style">
+                <a class="a2a_button_facebook"></a>
+                <a class="a2a_button_twitter"></a>
+                <a class="a2a_button_google_plus"></a>
+                <a class="a2a_button_linkedin"></a>
+                <a class="a2a_button_reddit"></a>
+                <a class="a2a_button_email"></a>
+                <a class="a2a_dd" href="https://www.addtoany.com/share"></a>
+            </div>
+                <script>
+                var a2a_config = a2a_config || {};
+                a2a_config.linkname = "Fast and Easy FASTQ to FASTA Converstion";
+                a2a_config.linkurl = "http://fastq2fasta.com";
+                </script>
+                <script async src="https://static.addtoany.com/menu/page.js"></script>
         </div>
-        <div class="form-group w-50">
-			<input type="file" id="files" name="files[]" accept=".fq, .fastq" multiple />
-        </div>
-        <button type="button" id="submit-button" class="btn btn-info btn-lg btn-block w-50">Convert</button>
-    </form>
+        <div class="col-lg-3"></div>
+     </div>
 </div>
+
 <script>
 	$('#files').filestyle({
 		btnClass : 'btn-secondary',
@@ -38,5 +73,15 @@
 	});
 </script>
 <script src="js/app.js"></script>
+
+<style>
+    .share-links {
+        margin: auto;
+        margin-top: 25px;
+        text-align: center;
+        width: 50%;
+    }
+</style>
+
 </body>
 </html>
