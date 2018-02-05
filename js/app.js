@@ -95,9 +95,13 @@ if (window.File && window.FileReader && window.FileList && window.Blob) {
 	function clearInputs() {
 		$("#files").filestyle('clear');
 		document.getElementById("fastqText").value = "";
+        // jquery-loading-overlay
+        $.LoadingOverlay("hide");
 	};
 
     function convertButton() {
+        // jquery-loading-overlay
+        $.LoadingOverlay("show");
         var files = document.getElementById("files").files; // FileList object
         var text = document.getElementById("fastqText").value;
 		var i=0;
